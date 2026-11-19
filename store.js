@@ -10,7 +10,7 @@
    Movie record shape (matches db/schema.sql columns):
      id          string   unique id
      name        string   title
-     releaseDate string   "YYYY-MM-DD"  (-> release_date DATE)
+     releaseYear number   e.g. 2010 or null (-> release_year SMALLINT)
      imdbRating  number   0–10 or null  (-> imdb_rating DECIMAL(3,1))
      genre       string   category      (-> genre)
      opinion     number   0–100 slider  (-> opinion; >=75 shows "Recommended")
@@ -27,10 +27,27 @@
     return 'm_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
   }
 
+  // Older saved records stored a full "YYYY-MM-DD" releaseDate; keep them
+  // working by folding them down to a releaseYear on load.
+  function migrate(list) {
+    if (!Array.isArray(list)) return list;
+    let changed = false;
+    list.forEach((m) => {
+      if (m && m.releaseYear == null && m.releaseDate) {
+        const y = /^(\d{4})/.exec(String(m.releaseDate));
+        m.releaseYear = y ? Number(y[1]) : null;
+        changed = true;
+      }
+      if (m && 'releaseDate' in m) { delete m.releaseDate; changed = true; }
+    });
+    if (changed) write(list);
+    return list;
+  }
+
   function read() {
     try {
       const raw = localStorage.getItem(KEY);
-      return raw ? JSON.parse(raw) : null;
+      return raw ? migrate(JSON.parse(raw)) : null;
     } catch (e) { return null; }
   }
 
@@ -41,15 +58,15 @@
   // Sample library so the app isn't empty on first run.
   // addedAt is set relative to "now" the first time it seeds.
   const SEED = [
-    { name: 'Inception',               releaseDate: '2010-07-16', imdbRating: 8.8, genre: 'Sci-Fi',    addedBy: 'samip', opinion: 92, cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Elliot Page', 'Tom Hardy', 'Cillian Murphy', 'Michael Caine'] },
-    { name: 'The Dark Knight',         releaseDate: '2008-07-18', imdbRating: 9.0, genre: 'Action',    addedBy: 'jason', opinion: 96, cast: ['Christian Bale', 'Heath Ledger', 'Aaron Eckhart', 'Michael Caine', 'Cillian Murphy'] },
-    { name: 'Parasite',                releaseDate: '2019-05-30', imdbRating: 8.5, genre: 'Thriller',  addedBy: 'samip', opinion: 88, cast: ['Song Kang-ho', 'Lee Sun-kyun', 'Cho Yeo-jeong'] },
-    { name: 'Spirited Away',           releaseDate: '2001-07-20', imdbRating: 8.6, genre: 'Animation', addedBy: 'jason', opinion: 70, cast: ['Rumi Hiiragi', 'Miyu Irino'] },
-    { name: 'The Grand Budapest Hotel',releaseDate: '2014-03-28', imdbRating: 8.1, genre: 'Comedy',    addedBy: 'samip', opinion: 62, cast: ['Ralph Fiennes', 'Tony Revolori', 'Saoirse Ronan'] },
-    { name: 'Interstellar',            releaseDate: '2014-11-07', imdbRating: 8.7, genre: 'Sci-Fi',    addedBy: 'jason', opinion: 85, cast: ['Matthew McConaughey', 'Anne Hathaway', 'Jessica Chastain', 'Michael Caine'] },
-    { name: 'Whiplash',                releaseDate: '2014-10-10', imdbRating: 8.5, genre: 'Drama',     addedBy: 'samip', opinion: 90, cast: ['Miles Teller', 'J.K. Simmons'] },
-    { name: 'Get Out',                 releaseDate: '2017-02-24', imdbRating: 7.7, genre: 'Horror',    addedBy: 'jason', opinion: 55, cast: ['Daniel Kaluuya', 'Allison Williams'] },
-    { name: 'Knives Out',              releaseDate: '2019-11-27', imdbRating: 7.9, genre: 'Mystery',   addedBy: 'samip', opinion: 66, cast: ['Daniel Craig', 'Ana de Armas', 'Chris Evans'] }
+    { name: 'Inception',               releaseYear: 2010, imdbRating: 8.8, genre: 'Sci-Fi',    addedBy: 'samip', opinion: 92, cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Elliot Page', 'Tom Hardy', 'Cillian Murphy', 'Michael Caine'] },
+    { name: 'The Dark Knight',         releaseYear: 2008, imdbRating: 9.0, genre: 'Action',    addedBy: 'jason', opinion: 96, cast: ['Christian Bale', 'Heath Ledger', 'Aaron Eckhart', 'Michael Caine', 'Cillian Murphy'] },
+    { name: 'Parasite',                releaseYear: 2019, imdbRating: 8.5, genre: 'Thriller',  addedBy: 'samip', opinion: 88, cast: ['Song Kang-ho', 'Lee Sun-kyun', 'Cho Yeo-jeong'] },
+    { name: 'Spirited Away',           releaseYear: 2001, imdbRating: 8.6, genre: 'Animation', addedBy: 'jason', opinion: 70, cast: ['Rumi Hiiragi', 'Miyu Irino'] },
+    { name: 'The Grand Budapest Hotel',releaseYear: 2014, imdbRating: 8.1, genre: 'Comedy',    addedBy: 'samip', opinion: 62, cast: ['Ralph Fiennes', 'Tony Revolori', 'Saoirse Ronan'] },
+    { name: 'Interstellar',            releaseYear: 2014, imdbRating: 8.7, genre: 'Sci-Fi',    addedBy: 'jason', opinion: 85, cast: ['Matthew McConaughey', 'Anne Hathaway', 'Jessica Chastain', 'Michael Caine'] },
+    { name: 'Whiplash',                releaseYear: 2014, imdbRating: 8.5, genre: 'Drama',     addedBy: 'samip', opinion: 90, cast: ['Miles Teller', 'J.K. Simmons'] },
+    { name: 'Get Out',                 releaseYear: 2017, imdbRating: 7.7, genre: 'Horror',    addedBy: 'jason', opinion: 55, cast: ['Daniel Kaluuya', 'Allison Williams'] },
+    { name: 'Knives Out',              releaseYear: 2019, imdbRating: 7.9, genre: 'Mystery',   addedBy: 'samip', opinion: 66, cast: ['Daniel Craig', 'Ana de Armas', 'Chris Evans'] }
   ];
 
   function ensureSeed() {

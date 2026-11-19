@@ -25,7 +25,7 @@ Two hardcoded demo users (password = username):
 ## Features
 
 - **Recently added** row on load, with brief details.
-- Each movie records **title, release date, IMDb rating, category, and who added it** (set automatically to the signed-in user).
+- Each movie records **title, release year, IMDb rating, category, and who added it** (set automatically to the signed-in user).
 - Rate **what you thought** on a 👎–👍 slider when adding; movies you loved (slider ≥ 75) get a **👍 Recommended** tag.
 - Add **cast** members one at a time (with **autocomplete** suggesting actors already in your collection); cast appears on each card, and you can **search by actor** or **click a name to browse** everything they're in.
 - **Smart browsing:** live title search, category chips with live counts, and sort by *recently added / highest rated / newest release / A–Z*.

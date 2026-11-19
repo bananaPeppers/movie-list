@@ -56,6 +56,40 @@ button { font: inherit; cursor: pointer; border-radius: 12px; border: 1px solid 
 .btn-ghost { background-color: rgba(255, 255, 255, 0.45); color: var(--text); border-color: var(--glass-border); }
 .btn-ghost:hover { background-color: rgba(255, 255, 255, 0.70); }
 
+/* Frosted "glass" call-to-action: accent-tinted translucency + blur, no gradient.
+   Highlight is an inset solid-colour line, not a gradient sheen. */
+.btn-glass {
+  background-color: rgba(91, 110, 245, 0.18);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  border-color: rgba(91, 110, 245, 0.38);
+  color: var(--accent);
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(39, 54, 92, 0.14),
+              inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  transition: background-color .15s, border-color .15s, box-shadow .15s, transform .08s;
+}
+.btn-glass:hover {
+  background-color: rgba(91, 110, 245, 0.28);
+  border-color: rgba(91, 110, 245, 0.55);
+  box-shadow: 0 10px 24px rgba(39, 54, 92, 0.18),
+              inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+.btn-glass:active { transform: translateY(1px); box-shadow: 0 3px 10px rgba(39, 54, 92, 0.16); }
+.btn-glass:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Square icon-only button (currently: log out). Label lives in aria-label/title. */
+.btn-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; padding: 0; border-radius: 12px;
+}
+.btn-icon svg {
+  width: 19px; height: 19px;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.btn-icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
 /* ---------- Inputs ---------- */
 label { display: flex; flex-direction: column; gap: 6px; font-size: 0.84rem; color: var(--muted); font-weight: 600; }
 input, select {
@@ -80,12 +114,16 @@ input:focus, select:focus { border-color: var(--accent); background-color: rgba(
 .topbar-wrap {
   position: sticky; top: 0; z-index: 30;
   background-color: var(--bg);
+  /* The 12px gap above the bar lives HERE as padding, not as a margin on
+     .topbar: a child margin would collapse out of this box and get dropped
+     once the wrap sticks at top:0, making the bar jump up on first scroll. */
+  padding-top: 12px;
   padding-bottom: 22px;
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
           mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
 }
 .topbar {
-  margin: 12px auto 0; max-width: 1080px;
+  margin: 0 auto; max-width: 1080px;
   display: flex; align-items: center; justify-content: space-between;
   gap: 12px; padding: 12px 18px; flex-wrap: wrap;
 }

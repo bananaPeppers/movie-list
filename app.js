@@ -23,10 +23,10 @@
   }
 
   // ---------- small helpers ----------
-  function yearOf(dateStr) {
-    if (!dateStr) return '';
-    const m = /^(\d{4})/.exec(dateStr);
-    return m ? m[1] : dateStr;
+  function yearOf(movie) {
+    const y = movie && movie.releaseYear;
+    if (y == null || y === '') return '';
+    return String(y);
   }
   function ratingBadge(r) {
     if (r == null || r === '' || isNaN(r)) return '<span class="rating-badge unrated">Not rated</span>';
@@ -76,7 +76,7 @@
     const card = document.createElement('article');
     card.className = 'glass card';
 
-    const year = yearOf(m.releaseDate);
+    const year = yearOf(m);
     const rec = m.opinion != null && Number(m.opinion) >= RECOMMEND_AT;
     const cast = Array.isArray(m.cast) ? m.cast.filter(Boolean) : [];
 
@@ -213,7 +213,7 @@
     list.sort((a, b) => {
       switch (state.sort) {
         case 'rating': return (Number(b.imdbRating) || 0) - (Number(a.imdbRating) || 0);
-        case 'release': return String(b.releaseDate || '').localeCompare(String(a.releaseDate || ''));
+        case 'release': return (Number(b.releaseYear) || 0) - (Number(a.releaseYear) || 0);
         case 'name': return String(a.name).localeCompare(String(b.name));
         default: return (b.addedAt || 0) - (a.addedAt || 0);
       }
@@ -358,9 +358,12 @@
     // Capture a cast name typed but not yet added.
     if (el('m-cast-input').value.trim()) addCastMember(el('m-cast-input').value);
 
+    const yearRaw = el('m-year').value.trim();
+    const year = yearRaw === '' ? null : Math.max(1888, Math.min(2100, parseInt(yearRaw, 10)));
+
     await Store.addMovie({
       name: name,
-      releaseDate: el('m-date').value || '',
+      releaseYear: Number.isNaN(year) ? null : year,
       imdbRating: rating,
       genre: genre,
       opinion: Number(el('m-opinion').value),

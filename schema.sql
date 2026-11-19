@@ -10,7 +10,7 @@ USE movielog;
 CREATE TABLE IF NOT EXISTS movies (
   id           VARCHAR(40)   NOT NULL PRIMARY KEY,
   name         VARCHAR(255)  NOT NULL,
-  release_date DATE          NULL,
+  release_year SMALLINT      NULL,      -- e.g. 2010
   imdb_rating  DECIMAL(3,1)  NULL,      -- 0.0 – 10.0
   genre        VARCHAR(50)   NULL,
   opinion      TINYINT       NULL,      -- 0–100 "what I thought"; >= 75 shows the Recommended tag
@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS movie_cast (
 );
 
 -- Sample rows ------------------------------------------------
-INSERT INTO movies (id, name, release_date, imdb_rating, genre, opinion, poster_url, added_by) VALUES
-  ('seed_inception',   'Inception',        '2010-07-16', 8.8, 'Sci-Fi',   92, NULL, 'samip'),
-  ('seed_dark_knight', 'The Dark Knight',  '2008-07-18', 9.0, 'Action',   96, NULL, 'jason'),
-  ('seed_parasite',    'Parasite',         '2019-05-30', 8.5, 'Thriller', 88, NULL, 'samip')
+INSERT INTO movies (id, name, release_year, imdb_rating, genre, opinion, poster_url, added_by) VALUES
+  ('seed_inception',   'Inception',        2010, 8.8, 'Sci-Fi',   92, NULL, 'samip'),
+  ('seed_dark_knight', 'The Dark Knight',  2008, 9.0, 'Action',   96, NULL, 'jason'),
+  ('seed_parasite',    'Parasite',         2019, 8.5, 'Thriller', 88, NULL, 'samip')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
