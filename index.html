@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Movie Log</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ============ APP VIEW (open to everyone) ============ -->
+  <div id="app-view">
+    <div class="topbar-wrap">
+    <header class="glass topbar">
+      <div class="brand">Movie Log</div>
+      <div class="top-actions">
+        <span class="user-chip" id="user-chip" hidden>Signed in as <b id="current-user"></b></span>
+        <button id="add-movie-btn" class="btn-primary" hidden>+ Add movie</button>
+        <button id="logout-btn" class="btn-ghost" hidden>Log out</button>
+        <button id="login-btn" class="btn-primary">Log in</button>
+      </div>
+    </header>
+    </div>
+
+    <main class="container">
+      <!-- Recently added -->
+      <section>
+        <h2>Recently added</h2>
+        <div id="recent-grid" class="grid"></div>
+      </section>
+
+      <!-- Smart browse -->
+      <section id="browse">
+        <div class="browse-head">
+          <h2>Browse your collection</h2>
+          <div class="controls">
+            <input id="search" type="search" placeholder="Search title or cast…" />
+            <select id="sort" aria-label="Sort movies">
+              <option value="recent">Recently added</option>
+              <option value="rating">Highest IMDb rating</option>
+              <option value="release">Newest release</option>
+              <option value="name">Title (A–Z)</option>
+            </select>
+          </div>
+        </div>
+        <div id="category-chips" class="chips"></div>
+        <div id="active-cast" class="active-cast" hidden></div>
+        <div id="movie-grid" class="grid"></div>
+        <p id="empty-state" class="muted" hidden>No movies match your filters.</p>
+      </section>
+    </main>
+  </div>
+
+  <!-- ============ ADD-MOVIE MODAL ============ -->
+  <div id="modal" class="modal-backdrop" hidden>
+    <form id="movie-form" class="glass modal-card">
+      <h2>Add a movie</h2>
+      <label>Title
+        <input id="m-name" type="text" required />
+      </label>
+      <label>Release date
+        <input id="m-date" type="date" />
+      </label>
+      <label>IMDb rating (0–10)
+        <input id="m-rating" type="number" min="0" max="10" step="0.1" placeholder="e.g. 8.5" />
+      </label>
+      <label>Category
+        <select id="m-genre"></select>
+      </label>
+      <label id="custom-genre-wrap" hidden>New category name
+        <input id="m-genre-custom" type="text" placeholder="e.g. K-Drama" />
+      </label>
+      <label>Cast (optional)
+        <div class="cast-input">
+          <div class="cast-field">
+            <input id="m-cast-input" type="text" autocomplete="off" placeholder="Type a name, then Enter or Add" />
+            <ul id="cast-suggest" class="cast-suggest" hidden></ul>
+          </div>
+          <button type="button" id="m-cast-add" class="btn-ghost">Add</button>
+        </div>
+      </label>
+      <div id="cast-chips" class="cast-chips" hidden></div>
+      <label>What did you think?
+        <div class="opinion">
+          <span class="op-icon" title="Didn't like it" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          </span>
+          <input id="m-opinion" type="range" min="0" max="100" step="1" value="50" />
+          <span class="op-icon" title="Loved it" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          </span>
+        </div>
+        <span id="opinion-label" class="op-label"></span>
+      </label>
+      <div class="modal-actions">
+        <button type="button" id="cancel-btn" class="btn-ghost">Cancel</button>
+        <button type="submit" class="btn-primary">Save movie</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ============ LOGIN MODAL ============ -->
+  <div id="login-modal" class="modal-backdrop" hidden>
+    <form id="login-form" class="glass modal-card" autocomplete="off">
+      <h2>Log in</h2>
+      <p class="muted">Log in to add movies to the list.</p>
+      <label>Username
+        <input id="login-username" type="text" autocomplete="username" required />
+      </label>
+      <label>Password
+        <input id="login-password" type="password" autocomplete="current-password" required />
+      </label>
+      <p id="login-error" class="error" hidden></p>
+      <div class="modal-actions">
+        <button type="button" id="login-cancel" class="btn-ghost">Cancel</button>
+        <button type="submit" class="btn-primary">Log in</button>
+      </div>
+      <p class="hint muted">Demo users: <b>samip</b> / samip &nbsp;·&nbsp; <b>jason</b> / jason</p>
+    </form>
+  </div>
+
+  <!-- Load order matters: data layer, then auth, then UI -->
+  <script src="store.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

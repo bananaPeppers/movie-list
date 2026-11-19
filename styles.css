@@ -1,0 +1,221 @@
+/* ===========================================================
+   Movie Log — light, glassy theme.
+   A single solid (slightly deeper) light background colour, with
+   translucent frosted-glass tiles sitting on top of it.
+   Rule: NO gradients anywhere — solid colour + transparency + blur.
+   =========================================================== */
+
+:root {
+  color-scheme: light;
+
+  --bg: #c7d3ec;               /* solid, nicely-coloured light background */
+  --text: #1f2a37;
+  --muted: #566579;
+  --accent: #5b6ef5;
+  --accent-ink: #ffffff;
+
+  /* Translucent frosted "glass" tiles over the solid background */
+  --glass: rgba(255, 255, 255, 0.50);
+  --glass-strong: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.70);
+  --shadow: 0 8px 30px rgba(39, 54, 92, 0.14);
+
+  --radius: 18px;
+  --danger: #e5484d;
+  --star: #f5a524;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+body {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text);
+  background-color: var(--bg);
+  min-height: 100vh;
+  line-height: 1.45;
+}
+
+/* ---------- Glass surface (translucent frosted tiles) ---------- */
+.glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+  backdrop-filter: blur(16px) saturate(135%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+}
+
+.muted { color: var(--muted); }
+
+/* ---------- Buttons ---------- */
+button { font: inherit; cursor: pointer; border-radius: 12px; border: 1px solid transparent; padding: 10px 16px; transition: background-color .15s, filter .15s; }
+.btn-primary { background-color: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.btn-primary:hover { filter: brightness(0.95); }
+.btn-ghost { background-color: rgba(255, 255, 255, 0.45); color: var(--text); border-color: var(--glass-border); }
+.btn-ghost:hover { background-color: rgba(255, 255, 255, 0.70); }
+
+/* ---------- Inputs ---------- */
+label { display: flex; flex-direction: column; gap: 6px; font-size: 0.84rem; color: var(--muted); font-weight: 600; }
+input, select {
+  font: inherit; color: var(--text);
+  padding: 10px 12px; border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.80);
+  background-color: rgba(255, 255, 255, 0.60);
+  outline: none; transition: border-color .15s, background-color .15s;
+}
+input::placeholder { color: var(--muted); opacity: 0.8; }
+input:focus, select:focus { border-color: var(--accent); background-color: rgba(255, 255, 255, 0.90); }
+
+/* ---------- Login (modal) ---------- */
+.modal-card p { margin: 0; }
+.hint { font-size: 0.8rem; text-align: center; margin-top: 4px; }
+.error { color: var(--danger); font-size: 0.85rem; margin: 0; }
+
+/* ---------- Top bar ---------- */
+/* Solid sticky backing: content hides behind this (never under the glass pill).
+   The bottom edge is faded with an alpha mask (a transparency fade, NOT a visible
+   colour gradient) so scrolled content dissolves away instead of ending on a hard line. */
+.topbar-wrap {
+  position: sticky; top: 0; z-index: 30;
+  background-color: var(--bg);
+  padding-bottom: 22px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+          mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+}
+.topbar {
+  margin: 12px auto 0; max-width: 1080px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 12px 18px; flex-wrap: wrap;
+}
+.brand { font-weight: 800; font-size: 1.15rem; }
+.top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.user-chip { color: var(--muted); font-size: 0.9rem; }
+
+/* ---------- Layout ---------- */
+.container { max-width: 1080px; margin: 0 auto; padding: 8px 18px 64px; }
+section { margin-top: 30px; }
+#browse { scroll-margin-top: 92px; } /* so jumping to Browse clears the sticky header */
+h2 { font-size: 1.15rem; margin: 0 0 14px; }
+
+.browse-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.controls { display: flex; gap: 10px; flex-wrap: wrap; }
+.controls input, .controls select { min-width: 170px; }
+
+/* ---------- Category chips ---------- */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.chip { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--glass-border); background-color: rgba(255, 255, 255, 0.50); color: var(--text); font-size: 0.85rem; font-weight: 600; }
+.chip:hover { background-color: rgba(255, 255, 255, 0.78); }
+.chip.active { background-color: var(--accent); color: #fff; border-color: var(--accent); }
+.chip .count { opacity: 0.7; margin-left: 4px; }
+
+/* ---------- Movie grid + cards ---------- */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+.card { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.card .title {
+  margin: 0; font-size: 1.05rem; line-height: 1.25; font-weight: 700;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Rating is the visual anchor now that there are no posters */
+.rating-badge {
+  flex: none; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  background-color: rgba(245, 165, 36, 0.16); color: var(--text);
+  padding: 5px 10px; border-radius: 10px; font-weight: 800; font-size: 0.95rem;
+}
+.rating-badge .star { color: var(--star); }
+.rating-badge.unrated { background-color: rgba(86, 101, 121, 0.14); color: var(--muted); font-weight: 600; font-size: 0.8rem; }
+
+.meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.82rem; color: var(--muted); }
+.genre-tag { background-color: rgba(91, 110, 245, 0.14); color: #3b4bd0; padding: 3px 10px; border-radius: 999px; font-weight: 600; }
+.rec-tag { background-color: rgba(63, 182, 160, 0.20); color: #117a66; padding: 3px 10px; border-radius: 999px; font-weight: 700; }
+
+.card-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(31, 42, 55, 0.10);
+}
+.added-by { font-size: 0.78rem; color: var(--muted); }
+.card-del {
+  padding: 4px 10px; font-size: 0.76rem; font-weight: 600; border-radius: 8px;
+  background-color: transparent; color: var(--muted); border: 1px solid transparent;
+}
+.card-del:hover { background-color: rgba(229, 72, 77, 0.12); color: var(--danger); }
+
+/* ---------- Cast ---------- */
+/* Clickable cast names on a card */
+.cast-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.cast-pill {
+  font: inherit; cursor: pointer; font-size: 0.74rem; font-weight: 600;
+  padding: 3px 9px; border-radius: 999px; border: 1px solid var(--glass-border);
+  background-color: rgba(255, 255, 255, 0.45); color: var(--text);
+}
+.cast-pill:hover { background-color: rgba(91, 110, 245, 0.16); color: #3b4bd0; border-color: transparent; }
+.cast-more { font-size: 0.74rem; color: var(--muted); }
+
+/* Active "browsing by cast" banner above the grid */
+.active-cast { margin-bottom: 16px; }
+.active-cast .cast-filter {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 8px 6px 14px; border-radius: 999px;
+  background-color: rgba(91, 110, 245, 0.14); color: #3b4bd0; font-size: 0.85rem; font-weight: 600;
+}
+.active-cast .cast-clear {
+  width: 22px; height: 22px; padding: 0; border-radius: 50%; line-height: 1; font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.5); color: #3b4bd0; border: none; display: grid; place-items: center;
+}
+.active-cast .cast-clear:hover { background-color: var(--accent); color: #fff; }
+
+/* Cast entry in the Add-movie form */
+.cast-input { display: flex; gap: 8px; }
+.cast-field { position: relative; flex: 1; min-width: 0; }
+.cast-field input { width: 100%; }
+.cast-suggest {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 10;
+  margin: 0; padding: 4px; list-style: none;
+  max-height: 184px; overflow-y: auto;
+  background-color: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border); border-radius: 12px; box-shadow: var(--shadow);
+}
+.cast-suggest li { padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: var(--text); }
+.cast-suggest li.active,
+.cast-suggest li:hover { background-color: rgba(91, 110, 245, 0.14); color: #3b4bd0; }
+.cast-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cast-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 6px 4px 11px; border-radius: 999px;
+  background-color: rgba(91, 110, 245, 0.12); color: #3b4bd0; font-size: 0.8rem; font-weight: 600;
+}
+.cast-chip .x {
+  width: 18px; height: 18px; padding: 0; border-radius: 50%; line-height: 1; font-size: 0.95rem;
+  background-color: transparent; color: #3b4bd0; border: none; display: grid; place-items: center; cursor: pointer;
+}
+.cast-chip .x:hover { background-color: rgba(229, 72, 77, 0.18); color: var(--danger); }
+
+/* ---------- Modal ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 50; padding: 20px;
+  background-color: rgba(31, 42, 55, 0.35);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  display: grid; place-items: center;
+}
+.modal-card { width: 100%; max-width: 420px; padding: 24px; display: flex; flex-direction: column; gap: 14px; max-height: calc(100vh - 40px); overflow-y: auto; }
+.modal-card h2 { margin: 0; }
+
+/* "What did you think?" slider */
+.opinion { display: flex; align-items: center; gap: 10px; }
+.op-icon { display: inline-flex; align-items: center; color: var(--muted); }
+.op-icon svg { width: 24px; height: 24px; display: block; }
+input[type="range"] { flex: 1; width: auto; padding: 0; border: none; background: transparent; accent-color: var(--accent); cursor: pointer; }
+.op-label { font-size: 0.9rem; font-weight: 700; color: var(--text); text-align: center; }
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 560px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .controls input, .controls select { min-width: 140px; flex: 1; }
+}
